@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 
 interface listGallery {
@@ -10,11 +10,6 @@ interface listGallery {
 
 interface UrlThumbs {
   thumb: string;
-}
-
-interface listLimitPage {
-  value: number;
-  label: number;
 }
 
 export default function Home() {
