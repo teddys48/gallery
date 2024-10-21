@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import Select from "react-select";
 
 interface listGallery {
@@ -10,6 +10,11 @@ interface listGallery {
 
 interface UrlThumbs {
   thumb: string;
+}
+
+interface listLimitPage {
+  value: number;
+  label: number;
 }
 
 export default function Home() {
@@ -78,7 +83,7 @@ export default function Home() {
       <div className="flex w-full bg-white px-10 py-3 fixed">
         <div className="flex w-full justify-start">
           <Select
-            defaultValue={{ val: limitPage, label: limitPage }}
+            defaultValue={{ value: limitPage, label: limitPage }}
             options={selectOption}
             onChange={(val: any) => changeLimitPerPage(val?.value)}
           ></Select>
@@ -95,7 +100,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex justify-center flex-row max-sm:py-16 py-10 space-x-1 space-y-1  flex-wrap flex-grow items-center">
-        {listPhotos.map((a: any) => {
+        {listPhotos.map((a: listGallery) => {
           return (
             <>
               <img alt={a.alt_description} width="auto" src={a.urls.thumb} />
