@@ -19,7 +19,7 @@ export default function Home() {
   const [page, setPage] = useState<number>(1);
   const [limitPage, setLimitPage] = useState<number>(30);
   const [modalStatus, setModalStatus] = useState<boolean>(false);
-  const [id, setID] = useState<string>("");
+  const [keyword, setKeyword] = useState<string>("");
   const [photos, setPhotos] = useState<any>({});
 
   const getData = async () => {
@@ -59,8 +59,30 @@ export default function Home() {
       });
   };
 
+  const getRandomData = async () => {
+    await axios
+      .get(`https://api.unsplash.com/photos/random`, {
+        headers: {
+          Authorization:
+            "Client-ID Jil7W7aqxND8w1lWrZIiZ5-c8VZQ2us5a8-zl8XtjsI",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setPhotos(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
-    getData();
+    if (keyword != "") {
+      searchPhotos(keyword);
+    } else {
+      getData();
+    }
+
     console.log("first");
   }, [page, limitPage]);
 
@@ -106,8 +128,37 @@ export default function Home() {
 
   const closeModal = () => {
     setModalStatus(!modalStatus);
-    setID("");
+    // setID("");
     setPhotos({});
+  };
+
+  const openModalRandomPhoto = async () => {
+    setModalStatus(!modalStatus);
+    await getRandomData();
+  };
+
+  const searchPhotos = async (keyword: string) => {
+    if (keyword != "") {
+      await axios
+        .get(
+          `https://api.unsplash.com/search/photos?page=${page}&per_page=${limitPage}&query=${keyword}`,
+          {
+            headers: {
+              Authorization:
+                "Client-ID Jil7W7aqxND8w1lWrZIiZ5-c8VZQ2us5a8-zl8XtjsI",
+            },
+          }
+        )
+        .then((res) => {
+          console.log("search", res);
+          setListPhotos(res.data.results);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      getData();
+    }
   };
 
   return (
@@ -140,27 +191,86 @@ export default function Home() {
         </div>
       </Modal>
       <div className="flex w-full flex-col">
-        <div className="flex w-full bg-white px-10 py-3 fixed">
-          <div className="flex w-full justify-start">
+        <div className="flex w-full max-lg:flex-col bg-white max-lg:px-2 px-10 py-3 fixed max-lg:space-y-1">
+          <div className="items-start hidden max-lg:w-full max-lg:flex max-lg:justify-center space-x-1">
+            <input
+              className="p-1 max-lg:text-sm rounded-md border-2 w-full"
+              type="text"
+              placeholder="Search..."
+              onChange={(val) => {
+                setTimeout(async () => {
+                  await searchPhotos(val.target.value);
+                }, 1000);
+                setKeyword(val.target.value);
+              }}
+            />
+            {/* <button>
+                <i className="fa-solid fa-rotate" onClick={() => getData()}></i>
+              </button> */}
+          </div>
+          <div className="flex w-full max-lg:justify-center max-lg:items-center justify-start space-x-3">
             <Select
               defaultValue={{ value: limitPage, label: limitPage }}
               options={selectOption}
+              className="max-lg:w-full"
               onChange={(val: any) => changeLimitPerPage(val?.value)}
             ></Select>
+            <div className=" hidden max-lg:w-full max-lg:flex items-center justify-end">
+              <button onClick={() => openModalRandomPhoto()}>
+                <i className="fa-solid fa-shuffle"></i>
+              </button>
+            </div>
+            <div className="hidden max-lg:flex flex-row max-lg:w-full max-lg:justify-end space-x-2">
+              <button
+                className={
+                  page == 1
+                    ? "max-lg:w-full pointer-events-none text-gray-400"
+                    : ""
+                }
+                onClick={() => changePagination("previous")}
+              >
+                previous
+              </button>
+              <span className="flex items-center">{page}</span>
+              <button onClick={() => changePagination("next")}>next</button>
+            </div>
           </div>
-          <div className="flex space-x-2 flex-row justify-end w-full max-h-screen">
-            <button
-              className={page == 1 ? "pointer-events-none text-gray-400" : ""}
-              onClick={() => changePagination("previous")}
-            >
-              previous
-            </button>
-            <span className="flex items-center">{page}</span>
-            <button onClick={() => changePagination("next")}>next</button>
+          <div className="flex space-x-10 max-lg:justify-center flex-row justify-end w-full">
+            <div className="flex items-center max-lg:justify-center space-x-1">
+              <input
+                className="p-1 max-lg:text-sm max-lg:hidden rounded-md border-2"
+                type="text"
+                placeholder="Search..."
+                onChange={(val) => {
+                  setTimeout(async () => {
+                    await searchPhotos(val.target.value);
+                  }, 1000);
+                  setKeyword(val.target.value);
+                }}
+              />
+              {/* <button>
+                <i className="fa-solid fa-rotate" onClick={() => getData()}></i>
+              </button> */}
+            </div>
+            <div className="flex max-lg:hidden items-center justify-end">
+              <button onClick={() => openModalRandomPhoto()}>
+                <i className="fa-solid fa-shuffle"></i>
+              </button>
+            </div>
+            <div className="flex max-lg:hidden flex-row max-lg:w-full max-lg:justify-end space-x-2">
+              <button
+                className={page == 1 ? "pointer-events-none text-gray-400" : ""}
+                onClick={() => changePagination("previous")}
+              >
+                previous
+              </button>
+              <span className="flex items-center">{page}</span>
+              <button onClick={() => changePagination("next")}>next</button>
+            </div>
           </div>
         </div>
-        <div className="flex justify-center flex-row max-sm:py-16 py-10 space-x-1 space-y-1 flex-wrap flex-grow items-center">
-          {listPhotos.map((a: listGallery) => {
+        <div className="flex justify-center flex-row max-lg:py-28 py-10 space-x-1 space-y-1 flex-wrap flex-grow items-center">
+          {listPhotos?.map((a: listGallery) => {
             return (
               <>
                 <img
