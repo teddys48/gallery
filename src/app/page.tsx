@@ -276,7 +276,7 @@ export default function Home() {
                 <img
                   alt={a.alt_description}
                   width="auto"
-                  className="cursor-pointer"
+                  className="cursor-pointer max-sm:w-44"
                   src={a.urls.thumb}
                   onClick={() => {
                     openModal(a.id);
