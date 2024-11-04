@@ -164,7 +164,7 @@ export default function Home() {
   return (
     <>
       <Modal status={modalStatus} closeModal={closeModal} title={""}>
-        <div className="flex max-lg:flex-col flex-row w-full space-x-2 h-full">
+        <div className="flex max-lg:flex-col flex-row w-full space-x-2 max-lg:h-auto h-full">
           <div className="flex justify-center w-full">
             <img
               alt={photos?.alt_description}
